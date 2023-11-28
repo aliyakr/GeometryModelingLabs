@@ -1,34 +1,46 @@
+#include <cmath>
 #include <iostream>
-#include "SFML/Graphics/CircleShape.hpp"
-#include "SFML/Graphics/Image.hpp"
-#include "SFML/Graphics/RenderTexture.hpp"
 #include "SFML/Graphics/RenderWindow.hpp"
-#include "SFML/Graphics/Sprite.hpp"
-#include "SFML/Graphics/Text.hpp"
-#include "SFML/Graphics/Texture.hpp"
+#include "SFML/Graphics/VertexArray.hpp"
 #include "SFML/System/Clock.hpp"
 #include "SFML/Window/Event.hpp"
 #include "imgui-SFML.h"
 #include "imgui.h"
 
+// Прототипы функций
+float SinFunction(float x);
+float CosFunction(float x);
+float SquareFunction(float x);
+float SqrtFunction(float x);
+float ExpFunction(float x);
 
 // Структура для хранения информации о каждой кнопке
-struct ColorButton
+struct FunctionButton
 {
 	std::string name;
-	sf::Color color;
+	float (*function)(float); // Указатель на функцию
 };
 
-// Массив цветов для 10 кнопок
-ColorButton colorButtons[] = {{"Red", sf::Color(255, 0, 0)},	   {"Green", sf::Color(0, 255, 0)},
-							  {"Blue", sf::Color(0, 0, 255)},	   {"Yellow", sf::Color(255, 255, 0)},
-							  {"Purple", sf::Color(255, 0, 255)},  {"Cyan", sf::Color(0, 255, 255)},
-							  {"Dark Red", sf::Color(128, 0, 0)},  {"Dark Green", sf::Color(0, 128, 0)},
-							  {"Dark Blue", sf::Color(0, 0, 128)}, {"Dark Yellow", sf::Color(128, 128, 0)}};
+FunctionButton functionButtons[] = { {"sin(x)", SinFunction},
+									{"cos(x)", CosFunction},
+									{"x^2", SquareFunction},
+									{"sqrt(x)", SqrtFunction},
+									{"exp(x)", ExpFunction} };
 
-sf::Color windowColor = sf::Color::White;
+float (*selectedFunction)(float) = nullptr; // Выбранная функция
+// Реализация функций
+float SinFunction(float x) { return std::sin(x); }
 
-void HandleUserInput(sf::RenderWindow &window, const sf::Event &event)
+float CosFunction(float x) { return std::cos(x); }
+
+float SquareFunction(float x) { return x * x; }
+
+float SqrtFunction(float x) { return std::sqrt(x); }
+
+float ExpFunction(float x) { return std::exp(x); }
+
+
+void HandleUserInput(sf::RenderWindow& window, const sf::Event& event)
 {
 	switch (event.type)
 	{
@@ -40,34 +52,49 @@ void HandleUserInput(sf::RenderWindow &window, const sf::Event &event)
 	}
 }
 
-void Update(sf::RenderWindow &window, const sf::Time &deltaClock)
+void Update(sf::RenderWindow& window, const sf::Time& deltaClock)
 {
 	// Make some time-dependent updates, like: physics, gameplay logic, animations, etc.
 }
 
-void Render(sf::RenderWindow &window)
+void RenderGui(sf::RenderWindow& window)
 {
-	// Draw some sfml/opengl items
-}
+	ImGui::Begin("Function Buttons");
 
-void RenderGui(sf::RenderWindow &window)
-{
-	ImGui::Begin("Default window");
-
-	for (const auto &button : colorButtons)
+	for (const auto& button : functionButtons)
 	{
 		if (ImGui::Button(button.name.c_str()))
 		{
-			windowColor = button.color;
+			// Выбираем функцию для отображения
+			selectedFunction = button.function;
 		}
 	}
 
 	ImGui::End();
 }
 
+void Render(sf::RenderWindow& window)
+{
+	if (selectedFunction != nullptr)
+	{
+		sf::VertexArray graph(sf::LineStrip, 800);
+
+		for (int i = 0; i < 800; ++i)
+		{
+			float x = static_cast<float>(i) / 100.0f - 4.0f; // Устанавливаем диапазон x от -4 до 4
+			float y = selectedFunction(x);
+
+			graph[i].position = sf::Vector2f(100.0f * x + window.getSize().x / 2, -50.0f * y + window.getSize().y / 2);
+			graph[i].color = sf::Color::Black; // Цвет графика
+		}
+
+		window.draw(graph);
+	}
+}
+
 int main()
 {
-	sf::RenderWindow window(sf::VideoMode(800, 800), "Geometry modeling 1");
+	sf::RenderWindow window(sf::VideoMode(800, 600), "Function Buttons");
 	window.setFramerateLimit(60);
 	if (!ImGui::SFML::Init(window))
 	{
@@ -89,7 +116,7 @@ int main()
 		ImGui::SFML::Update(window, deltaTime);
 		Update(window, deltaTime);
 
-		window.clear(windowColor);
+		window.clear(sf::Color::White); // Установка цвета очистки на белый
 
 		RenderGui(window);
 		Render(window);
