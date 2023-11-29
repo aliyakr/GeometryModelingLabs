@@ -7,6 +7,7 @@
 #include "imgui-SFML.h"
 #include "imgui.h"
 
+
 // Прототипы функций
 float SinFunction(float x);
 float CosFunction(float x);
