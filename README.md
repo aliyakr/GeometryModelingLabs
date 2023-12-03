@@ -7,7 +7,8 @@
    ![image](https://github.com/aliyakr/GeometryModelingLabs/assets/58439219/6f65025a-283f-4145-bc60-36d4514a356d) </br>
 2.1	Сделать переключатель М-Образов. Чтобы можно было из GUI менять визуализируемый образ </br>
 2.2 Добавить сохранение изображения на диск через GUI</br>
-![image](https://github.com/aliyakr/GeometryModelingLabs/assets/58439219/2425ff43-68c3-4b57-b05c-649710f51f50)</br>
+![image](https://github.com/aliyakr/GeometryModelingLabs/assets/58439219/74d3448c-e867-44ef-9f21-e108ba46ad7e)
+</br>
 3. Модификация 1. Сделать разноцветные М-Образы с изменением палитры +10 </br>
 ![image](https://github.com/aliyakr/GeometryModelingLabs/assets/58439219/5c43dbdc-d98b-4c1d-beab-9ec63ccbde0d)</br>
 ## Лабораторная работа №3
